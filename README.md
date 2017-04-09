@@ -36,5 +36,5 @@ ruby Exchanger.exchange(100, ['2017-04-07', '2017-04-02', '2017-02-07', '2017-04
 irb
 require_relative 'exchanger.rb'
 Exchanger.exchange(100, '2017-04-07')
-Exchanger.exchange(false, 100, ['2017-04-07', '2017-04-02', '2017-02-07', '2017-04-07'])
+Exchanger.exchange(100, ['2017-04-07', '2017-04-02', '2017-02-07', '2017-04-07'])
 ```
