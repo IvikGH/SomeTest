@@ -1,0 +1,18 @@
+Appsmakerstore
+European central bank publishing daily rates of pair EUR/USD here:
+https://sdw.ecb.europa.eu/quickview.do?SERIES_KEY=120.EXR.D.USD.EUR.SP00.A
+1. Write a code that fetching CSV from ecb website.
+2. Write a code that puts this data into database (any type of database, whatever you
+think is suitable)
+3. Write a code allowing to exchange any amount of euros for any period (day, week,
+month). For example:
+Exchanger.exchange(100, Date.today) => 109.94
+Exchanger.exchange(100, [Date.yesterday, Date.today]) =>
+[109.94, 110.02]
+4. cover it by tests (frameworks like rspec, minitest etc)
+5. write documentation how to install, run and use you code
+Requirements:
+1. DRY
+2. KISS
+3. log spent hours (for ex. 2h for coding, 2h for tests)
+4. there is no requirement for Rails framework, you can write as less code as possible
