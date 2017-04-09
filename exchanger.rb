@@ -22,6 +22,8 @@ class RatesWebLoader
 
   DOWNLOAD_PAGE = 'https://sdw.ecb.europa.eu/quickview.do?SERIES_KEY=120.EXR.D.USD.EUR.SP00.A'
   FILE_LINK_TEXT = 'CSV - Character Separated'
+  FILE_PATH = 'currency_rates.csv'
+
 
   @agent = Mechanize.new
   @rates = RatesDbAdapter.rates
@@ -33,6 +35,8 @@ class RatesWebLoader
   private
 
   def self.load_rates_to_database
+    File.delete(FILE_PATH)
+
     load_rates_file
 
     p 'load data from CSV file to database'
@@ -84,5 +88,5 @@ class Exchanger
 
 end
 
-Exchanger.exchange(100, '2017-04-07')
+# Exchanger.exchange(100, '2017-04-07')
 # Exchanger.exchange(false, 100, ['2017-04-07', '2017-04-02', '2017-02-07', '2017-04-07'])
