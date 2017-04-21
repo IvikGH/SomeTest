@@ -1,36 +1,17 @@
-require "./exchanger.rb"
+require './exchanger.rb'
 require 'spec_helper'
 
 describe RatesWebLoader do
+  let(:redis) { Redis.new(db: 'exchanger') }
 
-  FILE_PATH = 'currency_rates.csv'
-
-  it '.load_rates_file download file wrom site' do
-    File.delete(FILE_PATH) if FileTest.exist?(FILE_PATH)
-    RatesWebLoader.load_rates_file
-
-    expect(FileTest.exist?(FILE_PATH)).to be_truthy
-  end
-
-  it '.load_rates_file download CSV file' do
-
-    unless FileTest.exist?(FILE_PATH)
-      RatesWebLoader.load_rates_file
-    end
-
-    expect(File.extname(FILE_PATH)).to eq '.csv'
-  end
-
-  it '.load_rates_to_database populate database Rates table' do
-    p "elements amount #{RatesDbAdapter.rates.count}"
-    RatesDbAdapter.connection.run('TRUNCATE TABLE rates;')
-
-    p "elements amount #{RatesDbAdapter.rates.count}"
-    zero_elements = RatesDbAdapter.rates.count
-    RatesWebLoader.load_rates_to_database
-    p "elements amount #{RatesDbAdapter.rates.count}"
-
-    expect(RatesDbAdapter.rates.count > zero_elements).to be_truthy
+  it '.update_data populate database Rates table with updates' do
+    redis.flushdb
+    today_key = Time.local(2017, 4, 20).strftime('%Y-%m-%d')
+    today_rate_clear = redis.get(today_key)
+    RatesWebLoader.update_data
+    today_rate_updated = redis.get(today_key)
+    expect(today_rate_clear.nil?).to be_truthy
+    expect(today_rate_updated.nil?).to be_falsey
   end
 
   it '.raw_value return value if value is not "-"' do
@@ -42,11 +23,25 @@ describe RatesWebLoader do
   end
 
   it 'raw_valid? return true if date has YYYY-MM-DD format' do
-    expect(RatesWebLoader.send(:raw_valid?, ['2017-04-02', '1.2345'])).to be_truthy
+    expect(RatesWebLoader.send(:raw_valid?,
+                               ['2017-04-02', '1.2345'])).to be_truthy
   end
 
-  it 'raw_valid? return false if date has YYYY-MM-DD format or is something else' do
+  it 'raw_valid? return false if data isn"t YYYY-MM-DD format date' do
     expect(RatesWebLoader.send(:raw_valid?, ['xxxx', '1.2345'])).to be_falsey
     expect(RatesWebLoader.send(:raw_valid?, ['1234', '1.2345'])).to be_falsey
+  end
+
+  describe '.need_to_update?' do
+    it 'return true if "Exchanger" Redis DB hasn"t today value' do
+      redis.flushdb
+      expect(RatesWebLoader.send(:need_to_update?)).to be_truthy
+    end
+
+    it 'return false if "Exchanger" Redis DB has today value' do
+      RatesWebLoader.update_data
+      expect(RatesWebLoader.send(:need_to_update?,
+                                 Time.local(2017, 4, 20))).to be_falsey
+    end
   end
 end

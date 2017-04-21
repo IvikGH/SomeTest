@@ -16,3 +16,9 @@ Requirements:
 2. KISS
 3. log spent hours (for ex. 2h for coding, 2h for tests)
 4. there is no requirement for Rails framework, you can write as less code as possible
+
+
+отримати дані без збереження СЦВ файла на диска
+переробити щоб перші тести не падали (отримати дані до початку теста)
+використати Редіс
+відформатувати код Rubocop-ом
